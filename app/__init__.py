@@ -1,0 +1,1 @@
+"""Slackbot FastAPI application."""
