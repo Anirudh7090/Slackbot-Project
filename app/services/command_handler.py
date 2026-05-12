@@ -1,7 +1,4 @@
-"""Command handler — each bot has its own responses.
-
-Dispatch table keyed by bot slug so adding a new bot
-means adding one entry here, nothing else changes."""
+"""Command handler — each bot has its own responses."""
 
 import logging
 import re
@@ -23,27 +20,40 @@ def _normalize(text: str) -> str:
 # {bot_slug} in the response gets replaced with the actual bot slug.
 
 BOT_COMMANDS: dict[str, dict[frozenset, str]] = {
-    "prj-sk": {
+    "prj-ap": {
         frozenset({"hi", "hello", "hey", "yo"}): "hello {bot_slug} here! 👋",
         frozenset({"ping"}): "pong from {bot_slug}",
         frozenset({"help"}): (
-            "*PRJ-SK Bot commands:*\n"
+            "*PRJ-AP Bot commands:*\n"
             "• `hi` / `hello` — say hello\n"
             "• `ping` — check if I'm alive\n"
             "• `status` — system status"
         ),
         frozenset({"status"}): "✅ {bot_slug} is up and running",
     },
-    "prj-sk-2": {
+    "prj-ap-2": {
         frozenset({"hi", "hello", "hey", "yo"}): "hey there! {bot_slug} at your service 🤖",
         frozenset({"ping"}): "{bot_slug} pong!",
         frozenset({"help"}): (
-            "*PRJ-SK Bot 2 commands:*\n"
+            "*PRJ-AP Bot 2 commands:*\n"
             "• `hi` / `hello` — greet me\n"
             "• `ping` — ping me\n"
             "• `info` — about this bot"
         ),
         frozenset({"info"}): "I'm {bot_slug}, the second bot in this workspace.",
+    },
+    "ani": {
+        frozenset({"hi", "hello", "hey", "yo"}): "Helooooo, sir. {bot_slug} online. 🛡️",
+        frozenset({"ping"}): "Systems nominal — {bot_slug}.",
+        frozenset({"help"}): (
+            "*Ani commands:*\n"
+            "• `hi` — initiate contact\n"
+            "• `ping` — system check\n"
+            "• `whoami` — workspace info\n"
+            "• `report` — status report"
+        ),
+        frozenset({"whoami"}): "I am {bot_slug}, operating in PRJ-SK2 workspace, served by the same backend as the PRJ-SK bots.",
+        frozenset({"report"}): "All systems operational. {bot_slug} standing by.",
     },
 }
 

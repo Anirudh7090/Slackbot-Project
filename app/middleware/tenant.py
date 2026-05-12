@@ -1,16 +1,4 @@
-"""Tenant middleware.
-
-Resolves the tenant for every incoming request and:
-  1. attaches it to request.state (for endpoints to read)
-  2. sets contextvars (so logs auto-prefix with tenant name)
-
-Resolution rules:
-  - Slack routes (/slack/*): tenant is identified by Slack's team_id
-    in the form-encoded payload. We peek without consuming the body.
-  - Admin routes (/api/admin/*, /admin*): tenant is identified by
-    the X-Tenant-Slug header.
-  - Public routes (/, /health, /static/*, /docs, /openapi.json): no tenant.
-"""
+"""Tenant middleware."""
 
 import json
 import logging
@@ -36,6 +24,8 @@ _PUBLIC_PREFIXES = (
     "/openapi.json",
     "/redoc",
     "/favicon.ico",
+    "/admin",
+    "/api/admin",
 )
 
 
@@ -56,8 +46,6 @@ class TenantMiddleware(BaseHTTPMiddleware):
             )
 
         if tenant is None:
-            # Slack URL verification handshake doesn't have team_id yet —
-            # let it through, the slack endpoint handles it.
             if path.startswith("/slack"):
                 return await call_next(request)
             return JSONResponse({"error": "tenant_not_found"}, status_code=404)
@@ -83,15 +71,6 @@ class TenantMiddleware(BaseHTTPMiddleware):
             if not team_id:
                 return None
             return await self._lookup_by_team_id(team_id)
-
-        if path.startswith("/api/admin") or path.startswith("/admin"):
-            slug = request.headers.get("x-tenant-slug")
-            # Allow query param fallback for the HTML UI
-            if not slug:
-                slug = request.query_params.get("tenant")
-            if not slug:
-                return None
-            return await self._lookup_by_slug(slug)
 
         return None
 
