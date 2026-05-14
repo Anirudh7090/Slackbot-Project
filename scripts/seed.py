@@ -1,9 +1,3 @@
-"""Seed script — creates the first tenant + first bot.
-
-Reads Slack credentials from .env (you'll add these in a sec).
-Idempotent: re-running is safe, it just no-ops if rows already exist.
-"""
-
 """Seed script — creates the first tenant + first bot."""
 
 import asyncio
@@ -11,7 +5,6 @@ import logging
 import os
 import sys
 
-# Load .env before anything else so os.getenv() sees the values
 from dotenv import load_dotenv
 load_dotenv()  # reads .env from current working directory
 
@@ -21,10 +14,14 @@ from app.core.db import get_system_sessionmaker
 from app.core.logging_setup import setup_logging
 from app.models import Bot, Tenant
 
+# Seed default admin user
+from app.models import AdminUser
+from app.core.security import hash_password
+from app.config import get_settings
+    
 logger = logging.getLogger(__name__)
 
 
-# ---- Edit these env vars in .env, then run this script ----
 REQUIRED_ENV = [
     "SEED_TENANT_SLUG",
     "SEED_TENANT_NAME",
@@ -96,6 +93,24 @@ async def main() -> int:
             logger.info("Bot %s already exists (id=%s)", bot.slug, bot.id)
 
         await session.commit()
+        settings = get_settings()
+    async with sm() as session:
+        result = await session.execute(
+            select(AdminUser).where(AdminUser.username == settings.admin_default_username)
+        )
+        existing = result.scalar_one_or_none()
+        if existing is None:
+            admin = AdminUser(
+                username=settings.admin_default_username,
+                password_hash=hash_password(settings.admin_default_password),
+                is_active=True,
+            )
+            session.add(admin)
+            await session.commit()
+            logger.info("Created default admin user '%s'", admin.username)
+            print(f"Default admin: username='{admin.username}' password='{settings.admin_default_password}'")
+        else:
+            logger.info("Admin user '%s' already exists", existing.username)
 
     print("Seed complete.")
     return 0

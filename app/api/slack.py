@@ -1,17 +1,4 @@
-"""Slack webhook endpoint.
-
-Slack sends two kinds of POSTs we care about for step 1:
-  1. URL verification (one-time, when you save the Request URL in Slack)
-  2. Event callbacks (messages, app mentions, etc.)
-
-Flow:
-  - Tenant middleware has already resolved request.state.tenant_id
-    (using team_id from the body — body is cached by Starlette).
-  - We pick the right bot for the event.
-  - We verify the signature using THAT bot's signing secret.
-  - We dispatch to the command handler.
-  - We respond to Slack within 3 seconds (Slack's hard limit).
-"""
+"""Slack webhook endpoint."""
 
 import asyncio
 import json
@@ -92,9 +79,9 @@ async def _handle_event(*, bot_id: int, tenant_slug: str, event: dict) -> None:
     """Runs after we've already 200'd back to Slack."""
     from app.core.context import set_context
     from app.core.db import get_sessionmaker
+    from app.services.user_service import get_or_create_user  # NEW
 
     event_type = event.get("type")
-    # Ignore events from bots (including ourselves) to prevent loops
     if event.get("bot_id") or event.get("subtype") == "bot_message":
         return
 
@@ -110,13 +97,42 @@ async def _handle_event(*, bot_id: int, tenant_slug: str, event: dict) -> None:
             logger.error("Bot %s vanished mid-handle", bot_id)
             return
 
-        # Re-set context for the background task (contextvars don't auto-propagate
-        # cleanly across asyncio.create_task on all Python versions)
         set_context(
             tenant_id=bot.tenant_id, tenant_slug=tenant_slug, bot_slug=bot.slug
         )
 
-        # Log inbound
+      # Map the Slack user
+        user_display = user  
+        if user:
+            from app.services.slack_client import fetch_user_profile
+            from sqlalchemy import select as _select
+            from app.models import SlackUser
+
+            existing = (await session.execute(
+                _select(SlackUser).where(
+                    SlackUser.tenant_id == bot.tenant_id,
+                    SlackUser.slack_user_id == user,
+                )
+            )).scalar_one_or_none()
+
+            profile = None
+            if existing is None or not existing.real_name:
+                profile = await fetch_user_profile(
+                    bot_token=bot.bot_token, slack_user_id=user
+                )
+
+            mapped_user = await get_or_create_user(
+                session, tenant_id=bot.tenant_id, slack_user_id=user, profile=profile
+            )
+            user_display = (
+                mapped_user.real_name
+                or mapped_user.display_name
+                or mapped_user.slack_user_id
+            )
+            logger.info(
+                "From user: %s (slack_id=%s)", user_display, mapped_user.slack_user_id
+            )
+
         session.add(
             Message(
                 tenant_id=bot.tenant_id,
@@ -131,12 +147,10 @@ async def _handle_event(*, bot_id: int, tenant_slug: str, event: dict) -> None:
         )
         await session.commit()
 
-        # Get response from command handler
         response = await handle_message(bot=bot, text=text)
         if response is None:
             return
 
-        # Send reply
         try:
             await post_message(
                 bot_id=bot.id,
@@ -148,7 +162,6 @@ async def _handle_event(*, bot_id: int, tenant_slug: str, event: dict) -> None:
             logger.exception("Failed to post Slack message")
             return
 
-        # Log outbound
         session.add(
             Message(
                 tenant_id=bot.tenant_id,
@@ -162,4 +175,6 @@ async def _handle_event(*, bot_id: int, tenant_slug: str, event: dict) -> None:
             )
         )
         await session.commit()
-        logger.info("Replied %r in channel=%s", response, channel)
+        logger.info(
+            "Replied %r to %s in channel=%s", response, user_display, channel
+        )
