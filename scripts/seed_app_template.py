@@ -27,6 +27,7 @@ DEFAULT_SCOPES = [
     "channels:read",
     "groups:history",
     "users:read",
+    "users:read.email",
 ]
 
 REQUIRED_ENV = [
