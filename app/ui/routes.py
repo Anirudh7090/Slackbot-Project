@@ -168,3 +168,15 @@ async def user_history(request: Request, tenant_slug: str, page: int = 1):
             "total": total,
         },
     )
+
+@router.get("/admin/manage/{tenant_slug}/groups", response_class=HTMLResponse)
+async def manage_groups(request: Request, tenant_slug: str):
+    sm = get_system_sessionmaker()
+    async with sm() as session:
+        result = await session.execute(select(Tenant).where(Tenant.slug == tenant_slug))
+        tenant = result.scalar_one_or_none()
+        if not tenant:
+            raise HTTPException(status_code=404, detail="Tenant not found")
+    return templates.TemplateResponse(
+        "manage_groups.html", {"request": request, "tenant": tenant}
+    )

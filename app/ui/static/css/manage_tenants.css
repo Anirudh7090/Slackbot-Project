@@ -1,74 +1,38 @@
-/* Manage Tenants page */
-
-.tenants-toolbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: var(--sp-4);
-  gap: var(--sp-3);
+.tenant-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: var(--sp-5);
 }
-
-.tenants-search {
-  position: relative;
-  flex: 1;
-  max-width: 320px;
-}
-
-.tenants-search input {
-  width: 100%;
-  padding: 8px 12px 8px 36px;
-  border: 1px solid var(--slate-300);
-  border-radius: var(--rad);
-  font-size: 13px;
-  background: white;
+.tcard {
+  background: var(--n-0);
+  border-radius: var(--rad-md);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
   transition: var(--transition);
 }
-
-.tenants-search input:focus {
-  outline: none;
-  border-color: var(--indigo-500);
-  box-shadow: 0 0 0 3px rgb(99 102 241 / 0.15);
+.tcard:hover { box-shadow: var(--shadow-md); }
+.tcard-head { padding: var(--sp-5) var(--sp-6); display: flex; align-items: center; gap: var(--sp-4); }
+.tcard-logo {
+  width: 44px; height: 44px; border-radius: 50%;
+  background: var(--brand-500); color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 500; font-size: 17px; flex-shrink: 0;
 }
-
-.tenants-search svg {
-  position: absolute;
-  left: 11px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 16px;
-  height: 16px;
-  color: var(--slate-400);
-  pointer-events: none;
+.tcard-info { flex: 1; min-width: 0; }
+.tcard-name { font-size: 16px; font-weight: 500; color: var(--n-90); }
+.tcard-slug { font-size: 13px; color: var(--n-70); margin-top: 2px; }
+.tcard-meta {
+  padding: 0 var(--sp-6) var(--sp-4);
+  display: flex; align-items: center; gap: var(--sp-2); flex-wrap: wrap;
 }
-
-.team-id {
-  font-family: var(--font-mono);
-  font-size: 11.5px;
-  background: var(--slate-100);
-  color: var(--slate-700);
-  padding: 3px 8px;
-  border-radius: var(--rad-sm);
-  display: inline-block;
+.tcard-teamid {
+  font-family: var(--font-mono); font-size: 11.5px;
+  background: var(--n-20); color: var(--n-80);
+  padding: 3px 10px; border-radius: 999px;
 }
-
-.tenant-slug-cell {
-  display: flex;
-  align-items: center;
-  gap: var(--sp-3);
+.tcard-foot {
+  padding: var(--sp-3) var(--sp-4);
+  border-top: 1px solid var(--n-20);
+  display: flex; gap: var(--sp-1); flex-wrap: wrap; justify-content: flex-end;
 }
-
-.tenant-mini-logo {
-  width: 28px;
-  height: 28px;
-  border-radius: 6px;
-  background: linear-gradient(135deg, var(--indigo-500), var(--indigo-700));
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-weight: 700;
-  font-size: 12px;
-  flex-shrink: 0;
-}
-
-.tenant-name-strong { font-weight: 600; color: var(--slate-900); }
+.loading-note, .empty-host { grid-column: 1 / -1; }

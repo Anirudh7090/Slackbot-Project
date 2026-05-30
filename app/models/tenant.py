@@ -1,5 +1,7 @@
 """Tenant = a Slack workspace we serve."""
 
+from app.models.bot import Bot
+from sqlalchemy import Boolean, String, false
 from sqlalchemy import String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -25,6 +27,10 @@ class Tenant(Base, TimestampMixin):
     )
 
     is_active: Mapped[bool] = mapped_column(default=True, nullable=False)
+
+    access_control_enabled: Mapped[bool] = mapped_column(
+        Boolean, default=False, server_default=false(), nullable=False
+    )
 
     # Children
     bots: Mapped[list["Bot"]] = relationship(  # noqa: F821

@@ -2,102 +2,68 @@
 {% block title %}User History — {{ tenant.name }}{% endblock %}
 {% block header_title %}{{ tenant.name }} · User History{% endblock %}
 
-{% block extra_css %}
-<link rel="stylesheet" href="/static/css/user_history.css">
-{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="/static/css/user_history.css">{% endblock %}
 
 {% block content %}
 
 <div class="page-header">
   <div>
     <h1 class="page-title">User History</h1>
-    <p class="page-subtitle">Every message exchanged with bots in this workspace.</p>
+    <p class="page-subtitle">Every message exchanged with bots in this workspace</p>
   </div>
   <div class="page-actions">
-    <a class="btn btn-secondary" href="/admin/manage">← All tenants</a>
+    <a class="btn btn-secondary" href="/admin/manage">All tenants</a>
     <a class="btn btn-secondary" href="/admin/manage/{{ tenant.slug }}/users">Users</a>
   </div>
 </div>
 
-<div class="history-context-bar">
-  <div class="history-logo">{{ tenant.name[0]|upper }}</div>
-  <div>
-    <div style="font-size:15px;font-weight:600;color:var(--slate-900);">{{ tenant.name }}</div>
-    <div style="font-size:12px;color:var(--slate-500);margin-top:2px;">
-      {{ total }} total messages logged
-    </div>
-  </div>
+<div class="ctx-banner">
+  <div class="ctx-logo">{{ tenant.name[0]|upper }}</div>
+  <div><div class="ctx-name">{{ tenant.name }}</div><div class="ctx-meta">{{ total }} total messages logged</div></div>
 </div>
 
-<div class="card">
-  <div class="card-body no-pad">
-    <div class="table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th>When</th>
-            <th>User</th>
-            <th>Bot</th>
-            <th>Direction</th>
-            <th>Message</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for row in history %}
-          <tr>
-            <td class="ts-cell">{{ row.timestamp.strftime('%d %b %Y, %H:%M') }}</td>
-            <td>
-              {% if row.user_name %}
-                <strong style="color:var(--slate-900);">{{ row.user_name }}</strong>
-              {% elif row.user_email %}
-                {{ row.user_email }}
-              {% else %}
-                <code>{{ row.slack_user_id or '—' }}</code>
-              {% endif %}
-            </td>
-            <td>{{ row.bot_name }}</td>
-            <td>
-              {% if row.direction == 'inbound' %}
-                <span class="dir-badge dir-inbound">↘ Inbound</span>
-              {% else %}
-                <span class="dir-badge dir-outbound">↗ Outbound</span>
-              {% endif %}
-            </td>
-            <td><div class="msg-preview">{{ row.text or '—' }}</div></td>
-          </tr>
-          {% else %}
-          <tr><td colspan="5">
-            <div class="empty">
-              <div class="empty-icon">📜</div>
-              <div class="empty-title">No history yet</div>
-              <div class="empty-desc">Messages will appear here as users interact with the bots.</div>
-            </div>
-          </td></tr>
-          {% endfor %}
-        </tbody>
-      </table>
+{% if history %}
+<div class="timeline">
+  {% for row in history %}
+  <div class="tl-item">
+    <div class="tl-dot {% if row.direction == 'inbound' %}in{% else %}out{% endif %}"></div>
+    <div class="tl-card">
+      <div class="tl-top">
+        <span class="tl-user">
+          {% if row.user_name %}{{ row.user_name }}
+          {% elif row.user_email %}{{ row.user_email }}
+          {% else %}<code>{{ row.slack_user_id or '—' }}</code>{% endif %}
+        </span>
+        <span class="tl-bot">· {{ row.bot_name }}</span>
+        {% if row.direction == 'inbound' %}
+          <span class="tl-dir in">Inbound</span>
+        {% else %}
+          <span class="tl-dir out">Outbound</span>
+        {% endif %}
+        <span class="tl-ts">{{ row.timestamp.strftime('%d %b %Y, %H:%M') }}</span>
+      </div>
+      <div class="tl-msg">{{ row.text or '—' }}</div>
     </div>
   </div>
+  {% endfor %}
 </div>
+{% else %}
+<div class="card"><div class="empty">
+  <svg class="ico-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+  <div class="empty-title">No history yet</div>
+  <div class="empty-desc">Messages appear here as users interact with bots.</div>
+</div></div>
+{% endif %}
 
 {% if total_pages > 1 %}
-<div class="pagination">
-  <div class="pagination-info">Page {{ page }} of {{ total_pages }}</div>
-  <div class="pagination-controls">
-    <a class="page-link {% if page <= 1 %}disabled{% endif %}"
-       href="?page={{ page - 1 }}">‹ Prev</a>
-
-    {% for p in range(1, total_pages + 1) %}
-      {% if p == 1 or p == total_pages or (p >= page - 2 and p <= page + 2) %}
-        <a class="page-link {% if p == page %}active{% endif %}" href="?page={{ p }}">{{ p }}</a>
-      {% elif p == page - 3 or p == page + 3 %}
-        <span class="page-ellipsis">…</span>
-      {% endif %}
-    {% endfor %}
-
-    <a class="page-link {% if page >= total_pages %}disabled{% endif %}"
-       href="?page={{ page + 1 }}">Next ›</a>
-  </div>
+<div class="pager">
+  <a class="page-link {% if page <= 1 %}disabled{% endif %}" href="?page={{ page - 1 }}">‹</a>
+  {% for p in range(1, total_pages + 1) %}
+    {% if p == 1 or p == total_pages or (p >= page - 2 and p <= page + 2) %}
+      <a class="page-link {% if p == page %}active{% endif %}" href="?page={{ p }}">{{ p }}</a>
+    {% elif p == page - 3 or p == page + 3 %}<span class="page-ell">…</span>{% endif %}
+  {% endfor %}
+  <a class="page-link {% if page >= total_pages %}disabled{% endif %}" href="?page={{ page + 1 }}">›</a>
 </div>
 {% endif %}
 

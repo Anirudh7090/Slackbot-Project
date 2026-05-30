@@ -1,147 +1,73 @@
-/* Dashboard page */
+/* Dashboard — Anirudh (airy, rounded, Material) */
 
-.stats-grid {
+.metrics {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: var(--sp-4);
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: var(--sp-5);
   margin-bottom: var(--sp-8);
 }
-
-.stat-card {
-  background: white;
-  border: 1px solid var(--slate-200);
-  border-radius: var(--rad-lg);
-  padding: var(--sp-5);
-  box-shadow: var(--shadow-sm);
-  display: flex;
-  align-items: flex-start;
-  gap: var(--sp-4);
-  transition: var(--transition);
-}
-
-.stat-card:hover {
-  border-color: var(--indigo-200, #c7d2fe);
-  box-shadow: var(--shadow-md);
-}
-
-.stat-icon {
-  width: 44px;
-  height: 44px;
+.metric {
+  background: var(--n-0);
   border-radius: var(--rad-md);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 20px;
-  flex-shrink: 0;
-}
-
-.stat-icon.icon-indigo { background: var(--indigo-50); color: var(--indigo-600); }
-.stat-icon.icon-green  { background: var(--green-50);  color: var(--green-700); }
-.stat-icon.icon-amber  { background: var(--amber-50);  color: var(--amber-700); }
-.stat-icon.icon-red    { background: var(--red-50);    color: var(--red-700); }
-
-.stat-content { flex: 1; min-width: 0; }
-.stat-label {
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--slate-500);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-bottom: 4px;
-}
-.stat-value {
-  font-size: 26px;
-  font-weight: 700;
-  color: var(--slate-900);
-  line-height: 1.1;
-  letter-spacing: -0.5px;
-}
-.stat-meta {
-  margin-top: 6px;
-  font-size: 12px;
-  color: var(--slate-500);
-}
-
-/* Tenant cards */
-.tenant-grid {
-  display: grid;
-  gap: var(--sp-4);
-}
-
-.tenant-card {
-  background: white;
-  border: 1px solid var(--slate-200);
-  border-radius: var(--rad-lg);
-  overflow: hidden;
   box-shadow: var(--shadow-sm);
+  padding: var(--sp-6);
   transition: var(--transition);
 }
-
-.tenant-card:hover {
-  border-color: var(--slate-300);
-  box-shadow: var(--shadow-md);
+.metric:hover { box-shadow: var(--shadow-md); }
+.metric-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--sp-4); }
+.metric-ico {
+  width: 48px; height: 48px; border-radius: 50%;
+  background: var(--brand-50); color: var(--brand-600);
+  display: flex; align-items: center; justify-content: center;
 }
+.metric-ico.green { background: var(--green-50); color: var(--green-600); }
+.metric-ico.amber { background: var(--amber-50); color: var(--amber-600); }
+.metric-ico.red   { background: var(--red-50);   color: var(--red-600); }
+.metric-value { font-size: 36px; font-weight: 400; color: var(--n-90); line-height: 1; }
+.metric-label { font-size: 14px; font-weight: 500; color: var(--n-80); margin-top: var(--sp-2); }
+.metric-meta { font-size: 13px; color: var(--n-60); margin-top: 2px; }
 
-.tenant-card-header {
+.section-title { font-size: 20px; font-weight: 400; color: var(--n-90); margin-bottom: var(--sp-5); }
+
+.ws-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: var(--sp-5);
+}
+.ws-card {
+  background: var(--n-0);
+  border-radius: var(--rad-md);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  transition: var(--transition);
+}
+.ws-card:hover { box-shadow: var(--shadow-md); }
+.ws-card-head {
   padding: var(--sp-5) var(--sp-6);
-  display: flex;
-  align-items: center;
-  gap: var(--sp-4);
-  border-bottom: 1px solid var(--slate-100);
-  background: linear-gradient(to right, var(--slate-50), white);
+  display: flex; align-items: center; gap: var(--sp-4);
 }
-
-.tenant-logo {
-  width: 44px;
-  height: 44px;
-  border-radius: var(--rad);
-  background: linear-gradient(135deg, var(--indigo-500), var(--indigo-700));
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-weight: 700;
-  font-size: 18px;
-  flex-shrink: 0;
+.ws-card-logo {
+  width: 48px; height: 48px; border-radius: 50%;
+  background: var(--brand-500); color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 500; font-size: 18px; flex-shrink: 0;
 }
-
-.tenant-info { flex: 1; min-width: 0; }
-.tenant-name {
-  font-size: 15px;
-  font-weight: 600;
-  color: var(--slate-900);
+.ws-card-info { flex: 1; min-width: 0; }
+.ws-card-name { font-size: 16px; font-weight: 500; color: var(--n-90); }
+.ws-card-meta { font-size: 13px; color: var(--n-70); margin-top: 2px; }
+.ws-card-body {
+  padding: 0 var(--sp-6) var(--sp-5);
+  display: flex; flex-wrap: wrap; gap: var(--sp-2);
 }
-.tenant-meta {
-  font-size: 12px;
-  color: var(--slate-500);
-  margin-top: 2px;
+.ws-tag {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 14px; background: var(--n-10);
+  border-radius: 999px; font-size: 13px; font-weight: 500; color: var(--n-80);
 }
-.tenant-meta code { background: white; }
-
-.tenant-bots {
+.ws-tag .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green-600); }
+.ws-tag.off .dot { background: var(--n-50); }
+.ws-card-foot {
   padding: var(--sp-4) var(--sp-6);
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--sp-2);
+  border-top: 1px solid var(--n-20);
+  display: flex; justify-content: flex-end;
 }
-
-.bot-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--sp-2);
-  padding: 6px 12px;
-  background: var(--slate-50);
-  border: 1px solid var(--slate-200);
-  border-radius: 999px;
-  font-size: 12.5px;
-  font-weight: 500;
-  color: var(--slate-700);
-}
-
-.bot-chip-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--green-500);
-}
-.bot-chip.inactive .bot-chip-dot { background: var(--slate-400); }
