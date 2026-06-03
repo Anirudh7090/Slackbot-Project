@@ -26,6 +26,8 @@ _PUBLIC_PREFIXES = (
     "/favicon.ico",
     "/admin",
     "/api/admin",
+    "/user",
+    "/api/user",
 )
 
 
