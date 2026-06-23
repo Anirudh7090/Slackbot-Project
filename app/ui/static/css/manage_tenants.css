@@ -1,38 +1,102 @@
-.tenant-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: var(--sp-5);
+.tenant-grid{
+display:grid;
+grid-template-columns:repeat(auto-fill, minmax(300px, 1fr));
+gap:var(--sp-5);
 }
-.tcard {
-  background: var(--n-0);
-  border-radius: var(--rad-md);
-  box-shadow: var(--shadow-sm);
-  overflow: hidden;
-  transition: var(--transition);
+
+.tcard{
+background:linear-gradient(180deg, rgba(255,255,255,.95), rgba(248,250,255,.90));
+border:1px solid rgba(99,102,241,.10);
+border-radius:var(--rad-md);
+box-shadow:var(--shadow-sm);
+overflow:hidden;
+transition:var(--transition);
+position:relative;
 }
-.tcard:hover { box-shadow: var(--shadow-md); }
-.tcard-head { padding: var(--sp-5) var(--sp-6); display: flex; align-items: center; gap: var(--sp-4); }
-.tcard-logo {
-  width: 44px; height: 44px; border-radius: 50%;
-  background: var(--brand-500); color: #fff;
-  display: flex; align-items: center; justify-content: center;
-  font-weight: 500; font-size: 17px; flex-shrink: 0;
+
+.tcard::before{
+content:"";
+position:absolute;
+inset:0 0 auto 0;
+height:4px;
+background:linear-gradient(90deg, var(--brand-500), var(--cyan-500), var(--purple-600));
 }
-.tcard-info { flex: 1; min-width: 0; }
-.tcard-name { font-size: 16px; font-weight: 500; color: var(--n-90); }
-.tcard-slug { font-size: 13px; color: var(--n-70); margin-top: 2px; }
-.tcard-meta {
-  padding: 0 var(--sp-6) var(--sp-4);
-  display: flex; align-items: center; gap: var(--sp-2); flex-wrap: wrap;
+
+.tcard:hover{
+box-shadow:var(--shadow-md);
+transform:translateY(-4px);
+border-color:rgba(99,102,241,.18);
 }
-.tcard-teamid {
-  font-family: var(--font-mono); font-size: 11.5px;
-  background: var(--n-20); color: var(--n-80);
-  padding: 3px 10px; border-radius: 999px;
+
+.tcard-head{
+padding:var(--sp-5) var(--sp-6);
+display:flex;
+align-items:center;
+gap:var(--sp-4);
 }
-.tcard-foot {
-  padding: var(--sp-3) var(--sp-4);
-  border-top: 1px solid var(--n-20);
-  display: flex; gap: var(--sp-1); flex-wrap: wrap; justify-content: flex-end;
+
+.tcard-logo{
+width:48px;
+height:48px;
+border-radius:16px;
+background:linear-gradient(135deg, var(--brand-500), var(--purple-600));
+color:#fff;
+display:flex;
+align-items:center;
+justify-content:center;
+font-weight:800;
+font-size:17px;
+flex-shrink:0;
+box-shadow:0 12px 24px rgba(99,102,241,.22);
 }
-.loading-note, .empty-host { grid-column: 1 / -1; }
+
+.tcard-info{
+flex:1;
+min-width:0;
+}
+
+.tcard-name{
+font-size:16px;
+font-weight:800;
+color:var(--n-90);
+letter-spacing:-.02em;
+}
+
+.tcard-slug{
+font-size:13px;
+color:var(--n-60);
+margin-top:3px;
+}
+
+.tcard-meta{
+padding:0 var(--sp-6) var(--sp-4);
+display:flex;
+align-items:center;
+gap:var(--sp-2);
+flex-wrap:wrap;
+}
+
+.tcard-teamid{
+font-family:var(--font-mono);
+font-size:11.5px;
+background:var(--brand-50);
+color:var(--brand-700);
+padding:5px 11px;
+border-radius:999px;
+border:1px solid rgba(99,102,241,.10);
+}
+
+.tcard-foot{
+padding:var(--sp-3) var(--sp-4);
+border-top:1px solid rgba(148,163,184,.14);
+display:flex;
+gap:var(--sp-1);
+flex-wrap:wrap;
+justify-content:flex-end;
+background:rgba(238,242,255,.30);
+}
+
+.loading-note,
+.empty-host{
+grid-column:1 / -1;
+}

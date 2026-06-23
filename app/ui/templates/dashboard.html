@@ -1,103 +1,160 @@
 {% extends "base.html" %}
+
 {% block title %}Dashboard — Console{% endblock %}
 {% block header_title %}Dashboard{% endblock %}
 
-{% block extra_css %}<link rel="stylesheet" href="/static/css/dashboard.css">{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="/static/css/dashboard.css">
+{% endblock %}
 
 {% block content %}
-
 {% set active_bots = namespace(c=0) %}
 {% set total_bots = namespace(c=0) %}
+
 {% for item in tenant_data %}
   {% for b in item.bots %}
     {% set total_bots.c = total_bots.c + 1 %}
-    {% if b.is_active %}{% set active_bots.c = active_bots.c + 1 %}{% endif %}
+    {% if b.is_active %}
+      {% set active_bots.c = active_bots.c + 1 %}
+    {% endif %}
   {% endfor %}
 {% endfor %}
 
 <div class="page-header">
   <div>
-    <h1 class="page-title">Welcome back</h1>
-    <p class="page-subtitle">Here's what's happening across your workspaces</p>
+    <h1 class="page-title">Workspace overview</h1>
+    <p class="page-subtitle">Here’s what’s happening across your registered Slack workspaces.</p>
   </div>
   <div class="page-actions">
-    <a href="/admin/templates" class="btn btn-primary">
-      <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><path d="M3.27 6.96L12 12.01l8.73-5.05M12 22.08V12"/></svg>
-      Install URLs
+    <a class="btn btn-secondary" href="/admin/manage">
+      <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+        <rect x="3" y="4" width="18" height="16" rx="3"></rect>
+        <path d="M8 2v4M16 2v4M3 10h18"></path>
+      </svg>
+      Manage workspaces
+    </a>
+    <a class="btn btn-primary" href="/admin/templates">
+      <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+        <path d="M4 6.5A2.5 2.5 0 0 1 6.5 4H20v13.5A2.5 2.5 0 0 1 17.5 20H4z"></path>
+        <path d="M8 8h8M8 12h8M8 16h5"></path>
+      </svg>
+      View templates
     </a>
   </div>
+</div>
+
+<div class="info-box">
+  <strong>Console summary:</strong>
+  Track tenants and active Slack bots from one place. Open any workspace below to manage bots, users, and message history.
 </div>
 
 <div class="metrics">
   <div class="metric">
     <div class="metric-top">
-      <div class="metric-ico"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-3"/></svg></div>
-    </div>
-    <div class="metric-value">{{ tenant_data|length }}</div>
-    <div class="metric-label">Workspaces</div>
-    <div class="metric-meta">Active Slack tenants</div>
-  </div>
-  <div class="metric">
-    <div class="metric-top">
-      <div class="metric-ico green"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="6" y="6" width="12" height="12" rx="2"/><path d="M9 2v4M15 2v4M9 18v4M15 18v4M2 9h4M2 15h4M18 9h4M18 15h4"/></svg></div>
-    </div>
-    <div class="metric-value">{{ total_bots.c }}</div>
-    <div class="metric-label">Bots</div>
-    <div class="metric-meta">{{ active_bots.c }} currently active</div>
-  </div>
-  <div class="metric">
-    <div class="metric-top">
-      <div class="metric-ico amber"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
-    </div>
-    <div class="metric-value">Live</div>
-    <div class="metric-label">Runtime</div>
-    <div class="metric-meta">FastAPI · PostgreSQL · Async</div>
-  </div>
-  <div class="metric">
-    <div class="metric-top">
-      <div class="metric-ico red"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
-    </div>
-    <div class="metric-value">Secure</div>
-    <div class="metric-label">Authentication</div>
-    <div class="metric-meta">bcrypt · session cookies</div>
-  </div>
-</div>
-
-<div class="section-title">Workspaces</div>
-
-{% if tenant_data %}
-<div class="ws-grid">
-  {% for item in tenant_data %}
-  <div class="ws-card">
-    <div class="ws-card-head">
-      <div class="ws-card-logo">{{ item.tenant.name[0]|upper }}</div>
-      <div class="ws-card-info">
-        <div class="ws-card-name">{{ item.tenant.name }}</div>
-        <div class="ws-card-meta"><code>{{ item.tenant.slug }}</code></div>
+      <div class="metric-ico">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-3"></path>
+        </svg>
       </div>
     </div>
-    <div class="ws-card-body">
-      {% if item.bots %}{% for bot in item.bots %}
-        <span class="ws-tag {% if not bot.is_active %}off{% endif %}"><span class="dot"></span>{{ bot.name }}</span>
-      {% endfor %}{% else %}
-        <span class="ws-tag off"><span class="dot"></span>No bots yet</span>
-      {% endif %}
-    </div>
-    <div class="ws-card-foot">
-      <a href="/admin/manage/{{ item.tenant.slug }}" class="btn btn-secondary btn-sm">View bots</a>
-    </div>
+    <div class="metric-value">{{ tenant_data|length }}</div>
+    <div class="metric-label">Registered workspaces</div>
+    <div class="metric-meta">Slack tenants connected to the platform.</div>
   </div>
-  {% endfor %}
-</div>
-{% else %}
-<div class="card">
-  <div class="empty">
-    <svg class="ico-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-3"/></svg>
-    <div class="empty-title">No workspaces yet</div>
-    <div class="empty-desc">Register your first Slack workspace to get started.</div>
-    <a href="/admin/manage" class="btn btn-primary">Register workspace</a>
-  </div>
-</div>
-{% endif %}
 
+  <div class="metric">
+    <div class="metric-top">
+      <div class="metric-ico green">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <rect x="4" y="4" width="16" height="16" rx="4"></rect>
+          <path d="M9 12l2 2 4-4"></path>
+        </svg>
+      </div>
+    </div>
+    <div class="metric-value">{{ active_bots.c }}</div>
+    <div class="metric-label">Active bots</div>
+    <div class="metric-meta">Bots currently enabled across all workspaces.</div>
+  </div>
+
+  <div class="metric">
+    <div class="metric-top">
+      <div class="metric-ico amber">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M12 3l7 4v10l-7 4-7-4V7l7-4z"></path>
+          <path d="M9.5 12h5"></path>
+        </svg>
+      </div>
+    </div>
+    <div class="metric-value">{{ total_bots.c }}</div>
+    <div class="metric-label">Total bots</div>
+    <div class="metric-meta">Installed Slack apps available in all tenants.</div>
+  </div>
+</div>
+
+<h2 class="section-title">Workspaces</h2>
+
+{% if tenant_data %}
+  <div class="ws-grid">
+    {% for item in tenant_data %}
+      <div class="ws-card">
+        <div class="ws-card-head">
+          <div class="ws-card-logo">
+            {{ (item.tenant.name or item.tenant.slug or "W")[0]|upper }}
+          </div>
+          <div class="ws-card-info">
+            <div class="ws-card-name">{{ item.tenant.name or "Untitled workspace" }}</div>
+            <div class="ws-card-meta">
+              {{ item.tenant.slug }}
+              {% if item.tenant.slack_team_id %}
+                · Team ID: {{ item.tenant.slack_team_id }}
+              {% endif %}
+            </div>
+          </div>
+        </div>
+
+        <div class="ws-card-body">
+          <div class="ws-tag">
+            <span class="dot"></span>
+            {{ item.bots|length }} bot{% if item.bots|length != 1 %}s{% endif %}
+          </div>
+
+          <div class="ws-tag {% if not item.users %}off{% endif %}">
+            <span class="dot"></span>
+            {{ item.users|length }} user{% if item.users|length != 1 %}s{% endif %}
+          </div>
+
+          <div class="ws-tag {% if not item.bots %}off{% endif %}">
+            <span class="dot"></span>
+            {% set bot_active_count = namespace(c=0) %}
+            {% for b in item.bots %}
+              {% if b.is_active %}
+                {% set bot_active_count.c = bot_active_count.c + 1 %}
+              {% endif %}
+            {% endfor %}
+            {{ bot_active_count.c }} active
+          </div>
+        </div>
+
+        <div class="ws-card-foot">
+          <a class="btn btn-sm btn-secondary" href="/admin/manage/{{ item.tenant.slug }}">Bots</a>
+          <a class="btn btn-sm btn-secondary" href="/admin/manage/{{ item.tenant.slug }}/users">Users</a>
+          <a class="btn btn-sm btn-primary" href="/admin/manage/{{ item.tenant.slug }}/history">History</a>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+{% else %}
+  <div class="card">
+    <div class="empty">
+      <svg class="ico-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-3"></path>
+      </svg>
+      <div class="empty-title">No workspaces registered yet</div>
+      <div class="empty-desc">
+        Add your first Slack workspace to start managing bots, users, templates, and message history from the console.
+      </div>
+      <a class="btn btn-primary" href="/admin/manage">Register workspace</a>
+    </div>
+  </div>
+{% endif %}
 {% endblock %}
